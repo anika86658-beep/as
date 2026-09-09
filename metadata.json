@@ -1,0 +1,6 @@
+{
+  "name": "Arishten Organic Pure",
+  "description": "Organic e-commerce platform with automated order management, cPanel data sync, customer live tracking, and interactive operational progress dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

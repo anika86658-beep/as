@@ -1,0 +1,49 @@
+# Arishten Organic Pure - Ultra-Compatible Apache & LiteSpeed Configuration
+# Optimized for cPanel public_html
+
+Options -MultiViews
+DirectoryIndex index.html index.php
+
+# Proper MIME Types for Modern ES Modules & CSS
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+  AddType text/javascript .js
+  AddType text/css .css
+  AddType image/svg+xml .svg
+  AddType application/json .json
+  AddType font/woff2 .woff2
+  AddType font/woff .woff
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. CORS Headers for API calls
+  <IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, X-Admin-Token"
+  </IfModule>
+
+  # 2. Route all API requests to api.php
+  RewriteRule ^api/(.*)$ api.php?route=/$1 [QSA,L]
+  RewriteRule ^api$ api.php [QSA,L]
+
+  # 3. Do not rewrite existing physical files or directories
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 4. Exclude missing asset files from SPA rewrite to avoid MIME type errors (returning HTML as JS/CSS)
+  RewriteCond %{REQUEST_URI} \.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json)$ [NC]
+  RewriteRule ^ - [R=404,L]
+
+  # 5. React SPA Fallback: send all other requests to index.html
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Security: Deny direct web access to server JSON data storage
+<IfModule mod_rewrite.c>
+  RewriteRule ^data/.*\.json$ - [F,L]
+</IfModule>

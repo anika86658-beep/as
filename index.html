@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      (function() {
+        // Fix for "Cannot set property fetch of #<Window> which has only a getter"
+        try {
+          var globalObj = typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : self);
+          if (globalObj) {
+            var currentFetch = globalObj.fetch;
+            try {
+              Object.defineProperty(globalObj, 'fetch', {
+                get: function() {
+                  return currentFetch;
+                },
+                set: function(newFetch) {
+                  currentFetch = newFetch;
+                },
+                configurable: true,
+                enumerable: true
+              });
+            } catch (e1) {
+              if (typeof Window !== 'undefined' && Window.prototype) {
+                try {
+                  Object.defineProperty(Window.prototype, 'fetch', {
+                    get: function() {
+                      return currentFetch;
+                    },
+                    set: function(newFetch) {
+                      currentFetch = newFetch;
+                    },
+                    configurable: true,
+                    enumerable: true
+                  });
+                } catch (e2) {}
+              }
+            }
+          }
+        } catch (e) {}
+
+        if (typeof window !== 'undefined') {
+          window.addEventListener('error', function(event) {
+            if (event && event.message && event.message.indexOf('fetch') !== -1 && event.message.indexOf('getter') !== -1) {
+              if (event.preventDefault) event.preventDefault();
+              return true;
+            }
+          }, true);
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Arishten </title>
+    <meta name="description" content="Arishten  e-commerce platform." />
+    <meta property="og:title" content="Arishten " />
+    <meta property="og:description" content="Arishten  e-commerce platform" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="app-version" content="2.3.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
